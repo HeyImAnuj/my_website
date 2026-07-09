@@ -104,8 +104,8 @@ When someone submits the contact form, the message is saved to the database and 
 3. Add to `backend/.env`:
 
 ```env
-CONTACT_EMAIL_TO=anujpatel299@gmail.com
-SMTP_USER=anujpatel299@gmail.com
+CONTACT_EMAIL_TO=
+SMTP_USER=
 SMTP_PASS=your_16_character_app_password
 ```
 
@@ -223,8 +223,8 @@ git push -u origin main
 ```env
 DATABASE_URL=your_neon_connection_string
 CORS_ORIGIN=https://YOUR-SITE.vercel.app
-CONTACT_EMAIL_TO=anujpatel299@gmail.com
-SMTP_USER=anujpatel299@gmail.com
+CONTACT_EMAIL_TO=
+SMTP_USER=
 SMTP_PASS=your_gmail_app_password
 GOOGLE_DRIVE_RESUME_FILE_ID=your_resume_file_id
 GOOGLE_DRIVE_AVATAR_FILE_ID=your_photo_file_id
@@ -273,7 +273,7 @@ Redeploy the backend if needed.
 
 - Open your Vercel URL
 - Check profile, projects, and resume load
-- Submit the contact form → check **anujpatel299@gmail.com**
+- Submit the contact form → check **here**
 
 ### Custom domain (optional)
 
