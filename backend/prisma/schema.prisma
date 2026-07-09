@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Profile {
+  id          Int      @id @default(autoincrement())
+  name        String
+  title       String
+  tagline     String
+  bio         String   @db.Text
+  email       String
+  phone       String?
+  location    String
+  github      String?
+  linkedin    String?
+  twitter     String?
+  resumeUrl   String?
+  avatarUrl   String?
+  yearsExp    Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Skill {
+  id        Int      @id @default(autoincrement())
+  name      String
+  category  String
+  level     Int      @default(80)
+  icon      String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model Experience {
+  id          Int      @id @default(autoincrement())
+  company     String
+  role        String
+  location    String?
+  startDate   String
+  endDate     String?
+  current     Boolean  @default(false)
+  description String   @db.Text
+  highlights  String[]
+  techStack   String[]
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+model Project {
+  id           Int      @id @default(autoincrement())
+  title        String
+  description  String   @db.Text
+  longDesc     String?  @db.Text
+  imageUrl     String?
+  demoUrl      String?
+  githubUrl    String?
+  techStack    String[]
+  featured     Boolean  @default(false)
+  highlights   String[]
+  order        Int      @default(0)
+  createdAt    DateTime @default(now())
+}
+
+model Education {
+  id          Int      @id @default(autoincrement())
+  institution String
+  degree      String
+  field       String?
+  startDate   String
+  endDate     String?
+  gpa         String?
+  highlights  String[]
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+model Certification {
+  id          Int      @id @default(autoincrement())
+  name        String
+  issuer      String
+  date        String
+  credentialUrl String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  subject   String?
+  message   String   @db.Text
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}

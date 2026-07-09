@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: portfolio-api
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm install --include=dev && npm run render:build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false
+      - key: CONTACT_EMAIL_TO
+        value: anujpatel299@gmail.com
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: GOOGLE_DRIVE_RESUME_FILE_ID
+        sync: false
+      - key: GOOGLE_DRIVE_AVATAR_FILE_ID
+        sync: false
