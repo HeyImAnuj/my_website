@@ -1,6 +1,6 @@
 # Personal Portfolio Website
 
-A full-stack, interactive portfolio website built with **React**, **Node.js**, and **PostgreSQL**.
+A full-stack, interactive portfolio website built with **React**, **Node.js**, and static content — no database required.
 
 ## Tech Stack
 
@@ -8,8 +8,8 @@ A full-stack, interactive portfolio website built with **React**, **Node.js**, a
 | -------- | ----------------------------------- |
 | Frontend | React 19, Vite, Tailwind CSS 4, Framer Motion |
 | Backend  | Node.js, Express 5, TypeScript      |
-| Database | PostgreSQL 16, Prisma ORM           |
-| DevOps   | Docker Compose                      |
+| Content  | Static TypeScript data files        |
+| Hosting  | Vercel (frontend) + Render (API)    |
 
 ## Features
 
@@ -17,7 +17,8 @@ A full-stack, interactive portfolio website built with **React**, **Node.js**, a
 - Interactive skills filter with progress bars
 - Expandable experience timeline
 - Project cards with modal detail view
-- Contact form with backend persistence and email notifications
+- Contact form with email notifications
+- Resume & photo from Google Drive
 - Fully responsive design
 - Dark theme with glassmorphism effects
 
@@ -26,27 +27,18 @@ A full-stack, interactive portfolio website built with **React**, **Node.js**, a
 ### Prerequisites
 
 - Node.js 20+
-- Docker Desktop (for PostgreSQL)
 
-### 1. Start PostgreSQL
-
-```bash
-docker compose up -d
-```
-
-### 2. Install dependencies
+### 1. Install dependencies
 
 ```bash
 npm run install:all
 ```
 
-### 3. Setup database
+### 2. Configure backend
 
-```bash
-npm run db:setup
-```
+Copy `backend/.env.example` to `backend/.env` and add your Gmail App Password + Google Drive file IDs.
 
-### 4. Run development servers
+### 3. Run development servers
 
 ```bash
 npm run dev
@@ -62,40 +54,30 @@ my_website/
 ├── frontend/          # React + Vite app
 │   └── src/
 │       ├── components/   # UI sections
+│       ├── data/         # Portfolio content (edit this!)
 │       ├── hooks/        # Custom React hooks
-│       ├── lib/          # API client
-│       └── types/        # TypeScript types
-├── backend/           # Express API
-│   ├── prisma/        # Schema & seed data
-│   └── src/routes/    # API endpoints
-└── docker-compose.yml # PostgreSQL container
+│       └── lib/          # API client (contact form)
+├── backend/           # Express API (contact + assets only)
+│   └── src/routes/
+└── render.yaml        # Render deploy config
 ```
 
 ## Customizing Your Content
 
-Edit `backend/prisma/seed.ts` with your personal details, then re-run:
-
-```bash
-npm run db:setup
-```
+Edit `frontend/src/data/portfolio.ts` with your personal details — no database or restart needed beyond saving the file (hot reload in dev).
 
 ## API Endpoints
 
 | Method | Endpoint              | Description          |
 | ------ | --------------------- | -------------------- |
-| GET    | `/api/profile`        | Profile information  |
-| GET    | `/api/skills`         | Skills list          |
-| GET    | `/api/experience`     | Work experience      |
-| GET    | `/api/projects`       | Projects             |
-| GET    | `/api/education`      | Education            |
-| GET    | `/api/certifications` | Certifications       |
-| POST   | `/api/contact`        | Send contact message |
+| GET    | `/api/health`         | Health check         |
+| POST   | `/api/contact`        | Send contact email   |
 | GET    | `/api/assets/resume`  | Resume PDF from Google Drive |
 | GET    | `/api/assets/avatar`  | Profile photo from Google Drive |
 
 ## Contact Form Email
 
-When someone submits the contact form, the message is saved to the database and an email notification is sent to **anujpatel299@gmail.com**.
+When someone submits the contact form, an email is sent to **anujpatel299@gmail.com**.
 
 ### Gmail setup (one-time)
 
@@ -111,48 +93,13 @@ SMTP_PASS=your_16_character_app_password
 
 4. Restart the backend (`npm run dev`)
 
-> Use the App Password, not your regular Gmail password. If `SMTP_PASS` is empty, messages are still saved to the database but no email is sent.
+> Use the App Password, not your regular Gmail password.
 
 ## Google Drive — Resume & Profile Photo
 
-Your resume and profile photo are loaded **live from a Google Drive folder** by **filename**. When you delete and re-upload a file with the **same name**, the website picks up the new version within ~2 minutes (restart the backend for instant refresh).
+Your resume and profile photo are loaded from Google Drive via the backend.
 
-### Your folder setup
-
-| Setting | Value |
-| ------- | ----- |
-| Folder | `My website content` |
-| Resume | `Anuj_resume.pdf` |
-| Photo | `anuj.jpg` |
-
-### Option A — Folder + Service Account (recommended)
-
-Required for **delete & re-upload with same name** to work automatically.
-
-1. **Create a Google Drive folder** and upload `Anuj_resume.pdf` and `anuj.jpg`
-2. **Get the folder ID** from the URL:  
-   `https://drive.google.com/drive/folders/FOLDER_ID_HERE`
-3. **Create a Google Cloud service account** (one-time setup):
-   - Go to [Google Cloud Console](https://console.cloud.google.com/)
-   - Create a project → enable **Google Drive API**
-   - IAM → Service Accounts → Create → Keys → Add JSON key
-   - Save the JSON file as `backend/google-service-account.json`
-4. **Share the Drive folder** with the service account email  
-   (looks like `something@project-id.iam.gserviceaccount.com`) as **Viewer**
-5. **Add to `backend/.env`:**
-
-```env
-GOOGLE_DRIVE_FOLDER_ID=your_folder_id_here
-GOOGLE_DRIVE_RESUME_FILENAME=Anuj_resume.pdf
-GOOGLE_DRIVE_AVATAR_FILENAME=anuj.jpg
-GOOGLE_DRIVE_SERVICE_ACCOUNT_KEY_FILE=./google-service-account.json
-```
-
-6. Restart the backend
-
-> **Updating files:** Delete the old file on Drive, upload a new one with the **exact same filename**. The site will serve the new version automatically — no code or `.env` changes needed.
-
-### Option B — Simple file IDs (no Google Cloud setup)
+### Option B — Simple file IDs (recommended)
 
 1. Upload resume and photo to Google Drive
 2. Right-click each file → **Share** → **Anyone with the link** → Viewer
@@ -167,17 +114,16 @@ GOOGLE_DRIVE_AVATAR_FILE_ID=your_photo_file_id
 
 5. Restart the backend
 
-> **Tip:** To update your resume, use **File → Replace** on the same Drive file (keeps the same ID). If you upload a brand-new file, update the file ID in `.env`.
+> **Tip:** To update your resume, use **File → Replace** on the same Drive file (keeps the same ID).
 
-## Deploy to the Internet (Vercel + Render + Neon)
+## Deploy to the Internet (Vercel + Render)
 
-Free hosting setup:
+No database needed — just two free services:
 
 | Service | Hosts | URL you'll get |
 | ------- | ----- | -------------- |
-| [Neon](https://neon.tech) | PostgreSQL database | Connection string |
-| [Render](https://render.com) | Express API (backend) | `https://portfolio-api.onrender.com` |
 | [Vercel](https://vercel.com) | React frontend | `https://your-site.vercel.app` |
+| [Render](https://render.com) | Express API (contact + assets) | `https://portfolio-api.onrender.com` |
 
 ### Step 1 — Push code to GitHub
 
@@ -198,30 +144,13 @@ git push -u origin main
 
 > Never commit `.env` files — they are in `.gitignore`.
 
-### Step 2 — Create database on Neon
-
-1. Sign up at [neon.tech](https://neon.tech)
-2. **New Project** → name it `portfolio`
-3. Copy the **connection string** (starts with `postgresql://...neon.tech/...`)
-4. Keep it for Step 3
-
-### Step 3 — Deploy backend on Render
+### Step 2 — Deploy backend on Render
 
 1. Sign up at [render.com](https://render.com) → connect GitHub
-2. **New → Blueprint** → select your repo (uses `render.yaml` automatically)  
-   **OR** **New → Web Service** with these settings:
-
-| Setting | Value |
-| ------- | ----- |
-| Root Directory | `backend` |
-| Build Command | `npm install --include=dev && npm run render:build` |
-| Start Command | `npm start` |
-| Instance Type | Free |
-
+2. **New → Blueprint** → select your repo (uses `render.yaml`)
 3. Add **Environment Variables**:
 
 ```env
-DATABASE_URL=your_neon_connection_string
 CORS_ORIGIN=https://YOUR-SITE.vercel.app
 CONTACT_EMAIL_TO=
 SMTP_USER=
@@ -232,11 +161,9 @@ GOOGLE_DRIVE_AVATAR_FILE_ID=your_photo_file_id
 
 4. Deploy and copy your backend URL (e.g. `https://portfolio-api.onrender.com`)
 
-> **Note:** Free Render services sleep after 15 min of inactivity. First request may take ~30–60 seconds.
+> Free Render services sleep after 15 min of inactivity. First request may take ~30–60 seconds.
 
-> Set `CORS_ORIGIN` to your Vercel URL after Step 4. You can redeploy Render once you have it.
-
-### Step 4 — Deploy frontend on Vercel
+### Step 3 — Deploy frontend on Vercel
 
 1. Sign up at [vercel.com](https://vercel.com) → connect GitHub
 2. **Add New → Project** → import your repo
@@ -245,7 +172,7 @@ GOOGLE_DRIVE_AVATAR_FILE_ID=your_photo_file_id
 | Setting | Value |
 | ------- | ----- |
 | Root Directory | `frontend` |
-| Framework Preset | Vite (auto-detected) |
+| Framework Preset | Vite |
 | Build Command | `npm run build` |
 | Output Directory | `dist` |
 
@@ -255,29 +182,17 @@ GOOGLE_DRIVE_AVATAR_FILE_ID=your_photo_file_id
 VITE_API_URL=https://portfolio-api.onrender.com
 ```
 
-(Use your actual Render URL from Step 3, no trailing slash.)
-
 5. Click **Deploy**
 
-### Step 5 — Finish CORS
+### Step 4 — Update CORS on Render
 
-Go back to Render → your backend → **Environment** → update:
+Set `CORS_ORIGIN` to your actual Vercel URL and redeploy the backend if needed.
 
-```env
-CORS_ORIGIN=https://your-actual-site.vercel.app
-```
-
-Redeploy the backend if needed.
-
-### Step 6 — Test live site
+### Step 5 — Test
 
 - Open your Vercel URL
-- Check profile, projects, and resume load
-- Submit the contact form → check **here**
 
 ### Custom domain (optional)
 
 - **Vercel:** Project → Settings → Domains
-- **Render:** Service → Settings → Custom Domains
-
-Update `CORS_ORIGIN` and `VITE_API_URL` if you change domains.
+- Update `CORS_ORIGIN` on Render to match your custom domain

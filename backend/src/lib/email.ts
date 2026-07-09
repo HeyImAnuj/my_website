@@ -15,7 +15,7 @@ export function isEmailConfigured(): boolean {
 
 export async function sendContactNotification(data: ContactEmailData): Promise<void> {
   if (!isEmailConfigured()) {
-    console.warn('SMTP not configured — contact message saved but email not sent');
+    console.warn('SMTP not configured — contact form will not send email');
     return;
   }
 

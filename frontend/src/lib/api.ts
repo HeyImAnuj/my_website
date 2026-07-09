@@ -1,12 +1,4 @@
-import type {
-  Profile,
-  Skill,
-  Experience,
-  Project,
-  Education,
-  Certification,
-  ContactForm,
-} from '../types';
+import type { ContactForm } from '../types';
 
 const API_ROOT = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 const API_BASE = API_ROOT ? `${API_ROOT}/api` : '/api';
@@ -33,22 +25,8 @@ async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> 
 }
 
 export const api = {
-  getProfile: async () => {
-    const profile = await fetchApi<Profile>('/profile');
-    return {
-      ...profile,
-      resumeUrl: resolveApiUrl(profile.resumeUrl),
-      avatarUrl: resolveApiUrl(profile.avatarUrl),
-    };
-  },
-  getSkills: () => fetchApi<Skill[]>('/skills'),
-  getExperience: () => fetchApi<Experience[]>('/experience'),
-  getProjects: (featured?: boolean) =>
-    fetchApi<Project[]>(featured ? '/projects?featured=true' : '/projects'),
-  getEducation: () => fetchApi<Education[]>('/education'),
-  getCertifications: () => fetchApi<Certification[]>('/certifications'),
   sendContact: (data: ContactForm) =>
-    fetchApi<{ success: boolean; id: number }>('/contact', {
+    fetchApi<{ success: boolean }>('/contact', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
