@@ -19,7 +19,6 @@ export interface Skill {
   id: number;
   name: string;
   category: string;
-  level: number;
   icon: string | null;
   order: number;
 }
@@ -68,7 +67,7 @@ export interface Certification {
   id: number;
   name: string;
   issuer: string;
-  date: string;
+  date: string | null;
   credentialUrl: string | null;
   order: number;
 }

@@ -1,180 +1,226 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
-import { ExternalLink, Github, X } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ArrowUpRight, Check, Github } from 'lucide-react';
 import { useState } from 'react';
-import { SectionHeading } from './About';
 import type { Project } from '../types';
 
 interface ProjectsProps {
   projects: Project[];
 }
 
+const projectMeta = [
+  { label: 'Finance automation', metric: '45–50%', metricLabel: 'productivity gain', accent: '#ff5c35' },
+  { label: 'Enterprise ERP', metric: '65–70%', metricLabel: 'workflow efficiency', accent: '#b7f53b' },
+  { label: 'Commerce platform', metric: '4', metricLabel: 'core product areas', accent: '#6ca8ff' },
+];
+
 export function Projects({ projects }: ProjectsProps) {
-  const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
-  const [selected, setSelected] = useState<Project | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const activeProject = projects[activeIndex] ?? projects[0];
+  const meta = projectMeta[activeIndex] ?? projectMeta[0];
+
+  if (!activeProject) return null;
 
   return (
-    <section id="projects" className="py-24 relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[var(--color-bg-elevated)]/30 to-transparent" />
-      <div className="max-w-6xl mx-auto px-6 relative">
-        <SectionHeading title="Featured Projects" subtitle="What I've built" />
+    <section id="projects" className="relative overflow-hidden py-28 sm:py-36">
+      <div className="noise" />
+      <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+        <div className="mb-16 grid gap-8 lg:grid-cols-[1fr_.7fr] lg:items-end">
+          <div>
+            <span className="eyebrow">Selected systems</span>
+            <h2 className="mt-7 max-w-4xl text-[clamp(3rem,7vw,6.7rem)] font-semibold leading-[.9] tracking-[-.065em]">
+              Built to move
+              <span className="block text-[var(--color-text-muted)]">business forward.</span>
+            </h2>
+          </div>
+          <p className="max-w-lg text-base leading-relaxed text-[var(--color-text-muted)] lg:justify-self-end lg:text-lg">
+            Real enterprise products, presented as product stories—what was difficult, what I built, and the measurable change it created.
+          </p>
+        </div>
 
-        <div ref={ref} className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map((project, i) => (
-            <motion.div
+        <div className="mb-8 flex gap-2 overflow-x-auto pb-2" role="tablist" aria-label="Project case studies">
+          {projects.map((project, index) => (
+            <button
               key={project.id}
-              initial={{ opacity: 0, y: 40 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              onClick={() => setSelected(project)}
-              className="group p-6 rounded-xl glass hover:border-[var(--color-primary)]/50 cursor-pointer transition-all duration-300 hover:glow hover:-translate-y-1"
+              role="tab"
+              aria-selected={index === activeIndex}
+              aria-controls="project-panel"
+              onClick={() => setActiveIndex(index)}
+              className={`shrink-0 rounded-full border px-5 py-3 text-sm font-semibold transition-all ${
+                index === activeIndex
+                  ? 'border-white bg-white text-black'
+                  : 'border-white/10 bg-white/[.025] text-[var(--color-text-muted)] hover:border-white/25 hover:text-white'
+              }`}
             >
-              <div className="h-40 rounded-lg bg-gradient-to-br from-[var(--color-primary)]/20 to-[var(--color-accent)]/20 mb-4 flex items-center justify-center group-hover:from-[var(--color-primary)]/30 group-hover:to-[var(--color-accent)]/30 transition-all">
-                <span className="text-4xl font-bold gradient-text opacity-50 group-hover:opacity-100 transition-opacity">
-                  {project.title.charAt(0)}
-                </span>
-              </div>
-
-              <h3 className="text-lg font-bold mb-2 group-hover:gradient-text transition-all">
-                {project.title}
-              </h3>
-              <p className="text-sm text-[var(--color-text-muted)] mb-4 line-clamp-2">
-                {project.description}
-              </p>
-
-              <div className="flex flex-wrap gap-1.5 mb-4">
-                {project.techStack.slice(0, 4).map((tech) => (
-                  <span
-                    key={tech}
-                    className="px-2 py-0.5 text-xs rounded-md bg-[var(--color-bg-elevated)] text-[var(--color-text-muted)]"
-                  >
-                    {tech}
-                  </span>
-                ))}
-                {project.techStack.length > 4 && (
-                  <span className="px-2 py-0.5 text-xs text-[var(--color-text-muted)]">
-                    +{project.techStack.length - 4}
-                  </span>
-                )}
-              </div>
-
-              <div className="flex gap-3">
-                {project.githubUrl && (
-                  <a
-                    href={project.githubUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                    className="text-[var(--color-text-muted)] hover:text-[var(--color-primary-light)] transition-colors"
-                  >
-                    <Github size={18} />
-                  </a>
-                )}
-                {project.demoUrl && (
-                  <a
-                    href={project.demoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                    className="text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors"
-                  >
-                    <ExternalLink size={18} />
-                  </a>
-                )}
-              </div>
-            </motion.div>
+              0{index + 1} · {project.title.split('—')[0].trim()}
+            </button>
           ))}
         </div>
-      </div>
 
-      <AnimatePresence>
-        {selected && (
-          <ProjectModal project={selected} onClose={() => setSelected(null)} />
-        )}
-      </AnimatePresence>
+        <AnimatePresence mode="wait">
+          <motion.article
+            id="project-panel"
+            role="tabpanel"
+            key={activeProject.id}
+            initial={{ opacity: 0, y: 28 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+            className="product-shell rounded-[1.6rem] sm:rounded-[2.4rem]"
+          >
+            <div className="grid min-h-[42rem] lg:grid-cols-[.83fr_1.17fr]">
+              <div className="flex flex-col p-7 sm:p-10 lg:p-14">
+                <span className="font-mono text-xs uppercase tracking-[.18em]" style={{ color: meta.accent }}>
+                  {meta.label}
+                </span>
+                <h3 className="mt-6 text-3xl font-semibold leading-tight tracking-[-.04em] sm:text-5xl">
+                  {activeProject.title}
+                </h3>
+                <p className="mt-6 text-base leading-relaxed text-[var(--color-text-muted)] sm:text-lg">
+                  {activeProject.longDesc || activeProject.description}
+                </p>
+
+                <ul className="mt-8 space-y-3">
+                  {activeProject.highlights.map((highlight) => (
+                    <li key={highlight} className="flex items-start gap-3 text-sm text-white/75">
+                      <span
+                        className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
+                        style={{ backgroundColor: `${meta.accent}20`, color: meta.accent }}
+                      >
+                        <Check size={12} />
+                      </span>
+                      {highlight}
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="mt-auto flex flex-wrap items-end justify-between gap-8 pt-12">
+                  <div>
+                    <strong className="text-5xl font-semibold tracking-[-.06em] sm:text-6xl" style={{ color: meta.accent }}>
+                      {meta.metric}
+                    </strong>
+                    <p className="mt-2 text-xs uppercase tracking-[.14em] text-white/40">{meta.metricLabel}</p>
+                  </div>
+                  {activeProject.githubUrl && (
+                    <a
+                      href={activeProject.githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="premium-button border border-white/15 bg-white/5 text-white hover:border-white/30"
+                    >
+                      <Github size={17} /> GitHub profile
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              <ProjectVisual projectIndex={activeIndex} accent={meta.accent} />
+            </div>
+          </motion.article>
+        </AnimatePresence>
+
+        <div className="mt-7 flex flex-wrap gap-2">
+          {activeProject.techStack.map((tech) => (
+            <span key={tech} className="rounded-full border border-white/8 bg-white/[.025] px-4 py-2 text-xs text-white/55">
+              {tech}
+            </span>
+          ))}
+          {activeProject.demoUrl && (
+            <a
+              href={activeProject.demoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ml-auto flex items-center gap-2 text-sm font-semibold text-white"
+            >
+              Open live product <ArrowUpRight size={16} />
+            </a>
+          )}
+        </div>
+      </div>
     </section>
   );
 }
 
-function ProjectModal({ project, onClose }: { project: Project; onClose: () => void }) {
+function ProjectVisual({ projectIndex, accent }: { projectIndex: number; accent: string }) {
+  const views = [
+    {
+      title: 'Accounts Payable workspace',
+      metrics: [['45–50%', 'Productivity'], ['4', 'Core workflows'], ['Multi-level', 'Approvals']],
+      rows: [
+        ['Voucher Cash Disbursement', 'Delivered'],
+        ['Payment File Generation', 'Delivered'],
+        ['Remittance', 'Delivered'],
+        ['Approver Workflow', 'Delivered'],
+      ],
+    },
+    {
+      title: 'Star Finance modules',
+      metrics: [['65–70%', 'Efficiency'], ['35%', 'Faster APIs'], ['30%', 'Lower DB load']],
+      rows: [
+        ['Accounts Receivable', 'Contributed'],
+        ['Cash Management', 'Contributed'],
+        ['Accounts Payable', 'Contributed'],
+        ['Query Optimization', 'Optimized'],
+      ],
+    },
+    {
+      title: 'E-Commerce application',
+      metrics: [['4', 'Core features'], ['JPA', 'Data access'], ['Stock', 'Order checks']],
+      rows: [
+        ['User Management', 'Developed'],
+        ['Product Catalog', 'Developed'],
+        ['Shopping Cart', 'Developed'],
+        ['Order Placement', 'Developed'],
+      ],
+    },
+  ];
+  const view = views[projectIndex] ?? views[0];
+
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.9, y: 20 }}
-        transition={{ type: 'spring', damping: 25 }}
-        className="w-full max-w-2xl max-h-[85vh] overflow-y-auto p-8 rounded-2xl glass glow"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-start justify-between mb-6">
-          <h3 className="text-2xl font-bold gradient-text">{project.title}</h3>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-lg hover:bg-[var(--color-bg-elevated)] text-[var(--color-text-muted)]"
-          >
-            <X size={20} />
-          </button>
+    <div className="relative min-h-[32rem] overflow-hidden border-t border-white/8 bg-[#0b0d0b] p-5 sm:p-9 lg:border-l lg:border-t-0">
+      <div className="absolute -right-32 -top-32 h-80 w-80 rounded-full blur-[100px]" style={{ backgroundColor: `${accent}25` }} />
+      <div className="absolute -bottom-20 -left-24 h-72 w-72 rounded-full blur-[100px]" style={{ backgroundColor: `${accent}14` }} />
+      <div className="relative flex h-full flex-col rounded-[1.5rem] border border-white/10 bg-[#111411] p-4 shadow-2xl sm:p-6">
+        <div className="mb-7 flex items-center justify-between">
+          <div>
+            <p className="text-[9px] uppercase tracking-[.18em] text-white/30">Experience visualization</p>
+            <h4 className="mt-1 text-base font-semibold sm:text-xl">{view.title}</h4>
+          </div>
+          <div className="flex gap-1.5"><span className="h-2 w-2 rounded-full bg-white/10" /><span className="h-2 w-2 rounded-full bg-white/10" /><span className="h-2 w-2 rounded-full" style={{ backgroundColor: accent }} /></div>
         </div>
 
-        <p className="text-[var(--color-text-muted)] leading-relaxed mb-6">
-          {project.longDesc || project.description}
-        </p>
-
-        {project.highlights.length > 0 && (
-          <div className="mb-6">
-            <h4 className="font-semibold mb-3">Key Highlights</h4>
-            <ul className="space-y-2">
-              {project.highlights.map((h, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-[var(--color-text-muted)]">
-                  <span className="text-[var(--color-accent)]">▹</span>
-                  {h}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        <div className="flex flex-wrap gap-2 mb-6">
-          {project.techStack.map((tech) => (
-            <span
-              key={tech}
-              className="px-3 py-1 text-sm rounded-full bg-[var(--color-primary)]/20 text-[var(--color-primary-light)]"
-            >
-              {tech}
-            </span>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {view.metrics.map(([value, label], index) => (
+            <div key={label} className={`${index === 2 ? 'col-span-2 sm:col-span-1' : ''} rounded-xl border border-white/8 bg-white/[.025] p-4`}>
+              <p className="text-[9px] uppercase tracking-wider text-white/30">{label}</p>
+              <strong className="mt-2 block text-xl sm:text-2xl">{value}</strong>
+            </div>
           ))}
         </div>
 
-        <div className="flex gap-4">
-          {project.githubUrl && (
-            <a
-              href={project.githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--color-bg-elevated)] hover:bg-[var(--color-primary)]/20 transition-colors"
+        <div className="mt-3 flex-1 overflow-hidden rounded-xl border border-white/8 bg-black/20">
+          <div className="grid grid-cols-[1fr_.6fr_.5fr] border-b border-white/8 px-4 py-3 text-[8px] uppercase tracking-[.14em] text-white/25">
+            <span>Capability</span><span>Status</span><span className="text-right">Stack</span>
+          </div>
+          {view.rows.map(([row, status], index) => (
+            <motion.div
+              key={row}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: .15 + index * .08 }}
+              className="grid grid-cols-[1fr_.6fr_.5fr] items-center border-b border-white/5 px-4 py-4 text-[10px] sm:text-xs"
             >
-              <Github size={18} /> View Code
-            </a>
-          )}
-          {project.demoUrl && (
-            <a
-              href={project.demoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] transition-colors"
-            >
-              <ExternalLink size={18} /> Live Demo
-            </a>
-          )}
+              <span className="font-medium">{row}</span>
+              <span><i className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full" style={{ backgroundColor: accent }} />{status}</span>
+              <span className="text-right text-white/45">
+                {projectIndex === 0 ? 'React/Node' : projectIndex === 1 ? 'Spring/SQL' : 'Spring/JPA'}
+              </span>
+            </motion.div>
+          ))}
         </div>
-      </motion.div>
-    </motion.div>
+        <div className="mt-3 flex h-1 overflow-hidden rounded-full bg-white/5">
+          <motion.div initial={{ width: 0 }} animate={{ width: '100%' }} transition={{ duration: 1, delay: .4 }} className="rounded-full opacity-70" style={{ backgroundColor: accent }} />
+        </div>
+      </div>
+    </div>
   );
 }

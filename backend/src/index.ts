@@ -3,7 +3,6 @@ import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 import { contactRouter } from './routes/contact.js';
-import { assetsRouter } from './routes/assets.js';
 
 dotenv.config();
 
@@ -27,7 +26,6 @@ app.get('/api/health', (_req, res) => {
 });
 
 app.use('/api/contact', contactRouter);
-app.use('/api/assets', assetsRouter);
 
 app.use((_req, res) => {
   res.status(404).json({ error: 'Not found' });

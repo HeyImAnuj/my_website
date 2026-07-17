@@ -11,8 +11,8 @@ export function About({ profile }: AboutProps) {
 
   const stats = [
     { label: 'Years Experience', value: `${profile.yearsExp}+` },
-    { label: 'ERP Modules Built', value: '3+' },
-    { label: 'Technologies', value: '15+' },
+    { label: 'ERP Areas', value: 'AP · AR · CM' },
+    { label: 'API Response Gain', value: '35%' },
     { label: 'On-Time Releases', value: '100%' },
   ];
 
@@ -28,7 +28,7 @@ export function About({ profile }: AboutProps) {
             transition={{ duration: 0.7 }}
           >
             <div className="relative">
-              <div className="w-72 h-72 mx-auto rounded-2xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] p-1 animate-float">
+              <div className="w-[min(18rem,100%)] aspect-square mx-auto rounded-2xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] p-1 animate-float">
                 <div className="w-full h-full rounded-2xl bg-[var(--color-bg-card)] flex items-center justify-center overflow-hidden">
                   {profile.avatarUrl ? (
                     <img

@@ -54,21 +54,15 @@ export function Skills({ skills }: SkillsProps) {
                 animate={inView ? { opacity: 1, scale: 1 } : {}}
                 exit={{ opacity: 0, scale: 0.8 }}
                 transition={{ duration: 0.3, delay: i * 0.03 }}
-                className="group p-4 rounded-xl glass hover:glow transition-all duration-300 cursor-default"
+                className="group min-h-28 p-4 rounded-xl glass hover:glow transition-all duration-300 cursor-default flex items-center justify-center"
               >
                 <div className="text-center">
-                  <div className="text-lg font-semibold mb-3 group-hover:gradient-text transition-all">
+                  <div className="text-lg font-semibold group-hover:gradient-text transition-all">
                     {skill.name}
                   </div>
-                  <div className="w-full h-1.5 rounded-full bg-[var(--color-bg-dark)] overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={inView ? { width: `${skill.level}%` } : { width: 0 }}
-                      transition={{ duration: 1, delay: 0.3 + i * 0.05, ease: 'easeOut' }}
-                      className="h-full rounded-full bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-accent)]"
-                    />
+                  <div className="text-[10px] uppercase tracking-[.12em] text-[var(--color-text-muted)] mt-2">
+                    {skill.category}
                   </div>
-                  <div className="text-xs text-[var(--color-text-muted)] mt-2">{skill.level}%</div>
                 </div>
               </motion.div>
             ))}

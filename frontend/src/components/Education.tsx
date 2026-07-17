@@ -67,9 +67,11 @@ export function EducationSection({ education, certifications }: EducationSection
                 transition={{ duration: 0.5, delay: i * 0.15 }}
                 className="p-6 rounded-xl glass mb-4 hover:glow transition-all duration-300 group"
               >
-                <div className="text-sm text-[var(--color-text-muted)] font-mono mb-1">
-                  {cert.date}
-                </div>
+                {cert.date && (
+                  <div className="text-sm text-[var(--color-text-muted)] font-mono mb-1">
+                    {cert.date}
+                  </div>
+                )}
                 <h4 className="text-lg font-bold group-hover:gradient-text transition-all">
                   {cert.name}
                 </h4>

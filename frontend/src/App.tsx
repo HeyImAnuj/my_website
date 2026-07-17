@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { About } from './components/About';
@@ -8,8 +7,9 @@ import { Projects } from './components/Projects';
 import { EducationSection } from './components/Education';
 import { Contact } from './components/Contact';
 import { Footer } from './components/Footer';
+import { AmbientCursor } from './components/AmbientCursor';
+import { ScrollNinjas } from './components/ScrollNinjas';
 import { useActiveSection } from './hooks/useFetch';
-import { resolveApiUrl } from './lib/api';
 import {
   profile,
   skills,
@@ -23,18 +23,12 @@ const SECTIONS = ['about', 'skills', 'experience', 'projects', 'education', 'con
 
 export default function App() {
   const activeSection = useActiveSection(SECTIONS);
-
-  const portfolioProfile = useMemo(
-    () => ({
-      ...profile,
-      resumeUrl: resolveApiUrl('/api/assets/resume'),
-      avatarUrl: resolveApiUrl('/api/assets/avatar'),
-    }),
-    []
-  );
+  const portfolioProfile = profile;
 
   return (
     <>
+      <AmbientCursor />
+      <ScrollNinjas />
       <Navbar activeSection={activeSection} name={portfolioProfile.name} />
       <main>
         <Hero profile={portfolioProfile} />
