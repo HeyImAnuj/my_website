@@ -26,8 +26,10 @@ export function Contact() {
           <iframe
             title="Contact Anuj Patel"
             src={GOOGLE_FORM_EMBED}
-            className="block h-[min(78vh,52rem)] w-full border-0 bg-white"
+            className="block w-full border-0 bg-white"
+            style={{ height: '1200px' }}
             loading="lazy"
+            scrolling="no"
           >
             Loading contact form…
           </iframe>
