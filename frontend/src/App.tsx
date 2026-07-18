@@ -9,6 +9,7 @@ import { Contact } from './components/Contact';
 import { Footer } from './components/Footer';
 import { AmbientCursor } from './components/AmbientCursor';
 import { ScrollNinjas } from './components/ScrollNinjas';
+import { MusicToggle } from './components/MusicToggle';
 import { useActiveSection } from './hooks/useFetch';
 import {
   profile,
@@ -29,6 +30,7 @@ export default function App() {
     <>
       <AmbientCursor />
       <ScrollNinjas />
+      <MusicToggle />
       <Navbar activeSection={activeSection} name={portfolioProfile.name} />
       <main>
         <Hero profile={portfolioProfile} />
