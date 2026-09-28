@@ -1,20 +1,13 @@
-import { Heart } from 'lucide-react';
-
 interface FooterProps {
   name: string;
 }
 
 export function Footer({ name }: FooterProps) {
-  const year = new Date().getFullYear();
-
   return (
-    <footer className="py-8 border-t border-[var(--color-border)]">
-      <div className="max-w-6xl mx-auto px-6 text-center">
-        <p className="text-[var(--color-text-muted)] text-sm flex items-center justify-center gap-1">
-          © {year} {name}. Built with
-          <Heart size={14} className="text-red-400 inline" />
-          using React, Node.js & PostgreSQL
-        </p>
+    <footer className="border-t border-[var(--color-border)] px-5 py-8 sm:px-8">
+      <div className="mx-auto flex max-w-5xl flex-col gap-2 text-sm text-[var(--color-text-muted)] sm:flex-row sm:items-center sm:justify-between">
+        <p>© {new Date().getFullYear()} {name}</p>
+        <p>Software Development Engineer 2</p>
       </div>
     </footer>
   );

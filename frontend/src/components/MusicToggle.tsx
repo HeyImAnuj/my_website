@@ -127,7 +127,7 @@ export function MusicToggle() {
         aria-pressed={playing}
         aria-label={playing ? 'Pause background music' : 'Play background music'}
         data-cursor
-        className="fixed bottom-5 left-5 z-[70] flex h-12 w-12 items-center justify-center rounded-full border border-white/12 bg-black/60 text-[#d4af37] backdrop-blur-xl transition-colors hover:border-[#d4af37]/60 sm:bottom-7 sm:left-7"
+        className="fixed bottom-5 right-5 z-[70] flex h-12 w-12 items-center justify-center rounded-full border border-[var(--color-border)] bg-white text-[var(--color-text)] shadow-lg transition hover:-translate-y-0.5 sm:bottom-7 sm:right-7"
       >
         {loading ? (
           <Loader2 size={20} className="animate-spin" />
@@ -136,7 +136,7 @@ export function MusicToggle() {
             {[0, 1, 2, 3].map((bar) => (
               <motion.span
                 key={bar}
-                className="w-[3px] rounded-full bg-[#d4af37]"
+                className="w-[3px] rounded-full bg-[var(--color-text)]"
                 animate={{ height: [4, 16, 7, 14, 5] }}
                 transition={{
                   duration: 0.9,

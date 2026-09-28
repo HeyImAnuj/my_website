@@ -1,6 +1,5 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
-import { useState, useMemo } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useMemo, useState } from 'react';
 import { SectionHeading } from './About';
 import type { Skill } from '../types';
 
@@ -9,65 +8,70 @@ interface SkillsProps {
 }
 
 export function Skills({ skills }: SkillsProps) {
-  const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
-  const categories = useMemo(
-    () => [...new Set(skills.map((s) => s.category))],
-    [skills]
-  );
-  const [activeCategory, setActiveCategory] = useState('All');
-  const allCategories = ['All', ...categories];
-
-  const filtered =
-    activeCategory === 'All'
-      ? skills
-      : skills.filter((s) => s.category === activeCategory);
+  const categories = useMemo(() => [...new Set(skills.map((skill) => skill.category))], [skills]);
+  const [active, setActive] = useState('All');
+  const visible = active === 'All' ? skills : skills.filter((skill) => skill.category === active);
+  const groups = useMemo(() => {
+    const names = active === 'All' ? categories : [active];
+    return names.map((category) => ({
+      category,
+      items: visible.filter((skill) => skill.category === category),
+    }));
+  }, [active, categories, visible]);
 
   return (
-    <section id="skills" className="py-24 relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[var(--color-bg-elevated)]/30 to-transparent" />
-      <div className="max-w-6xl mx-auto px-6 relative">
-        <SectionHeading title="Skills & Technologies" subtitle="What I work with" />
-
-        <div ref={ref} className="flex flex-wrap justify-center gap-2 mb-10">
-          {allCategories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                activeCategory === cat
-                  ? 'bg-[var(--color-primary)] text-white glow'
-                  : 'glass text-[var(--color-text-muted)] hover:text-[var(--color-text)]'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+    <section id="skills" className="px-5 py-16 sm:px-8 sm:py-20">
+      <div className="mx-auto max-w-5xl">
+        <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+          <SectionHeading title="Skills" subtitle="What I work with" />
+          <div className="flex gap-2 overflow-x-auto pb-1" role="tablist" aria-label="Skill categories">
+            {['All', ...categories].map((category) => (
+              <button
+                key={category}
+                type="button"
+                role="tab"
+                aria-selected={active === category}
+                onClick={() => setActive(category)}
+                className={`shrink-0 rounded-full px-3 py-1.5 text-sm transition ${
+                  active === category
+                    ? 'bg-[var(--color-text)] text-white'
+                    : 'bg-white text-[var(--color-text-muted)] ring-1 ring-[var(--color-border)] hover:text-[var(--color-text)]'
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <motion.div layout className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          <AnimatePresence mode="popLayout">
-            {filtered.map((skill, i) => (
-              <motion.div
-                key={skill.id}
-                layout
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={inView ? { opacity: 1, scale: 1 } : {}}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.3, delay: i * 0.03 }}
-                className="group min-h-28 p-4 rounded-xl glass hover:glow transition-all duration-300 cursor-default flex items-center justify-center"
-              >
-                <div className="text-center">
-                  <div className="text-lg font-semibold group-hover:gradient-text transition-all">
-                    {skill.name}
-                  </div>
-                  <div className="text-[10px] uppercase tracking-[.12em] text-[var(--color-text-muted)] mt-2">
-                    {skill.category}
+        <div className="space-y-8">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={active}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.28 }}
+              className="space-y-8"
+            >
+              {groups.map((group) => (
+                <div key={group.category}>
+                  <h3 className="mb-3 text-sm font-medium text-[var(--color-text-muted)]">{group.category}</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {group.items.map((skill) => (
+                      <span
+                        key={skill.id}
+                        className="rounded-full border border-[var(--color-border)] bg-white px-3 py-2 text-sm"
+                      >
+                        {skill.name}
+                      </span>
+                    ))}
                   </div>
                 </div>
-              </motion.div>
-            ))}
+              ))}
+            </motion.div>
           </AnimatePresence>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

@@ -1,7 +1,4 @@
 import { motion } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
-import { Briefcase, ChevronDown } from 'lucide-react';
-import { useState } from 'react';
 import { SectionHeading } from './About';
 import type { Experience } from '../types';
 
@@ -10,106 +7,58 @@ interface ExperienceSectionProps {
 }
 
 export function ExperienceSection({ experiences }: ExperienceSectionProps) {
-  const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
-  const [expanded, setExpanded] = useState<number | null>(experiences[0]?.id ?? null);
-
   return (
-    <section id="experience" className="py-24">
-      <div className="max-w-6xl mx-auto px-6">
-        <SectionHeading title="Work Experience" subtitle="My journey" />
-
-        <div ref={ref} className="relative">
-          <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-px bg-[var(--color-border)] md:-translate-x-px" />
-
-          {experiences.map((exp, i) => {
-            const isExpanded = expanded === exp.id;
-            const isLeft = i % 2 === 0;
-
-            return (
-              <motion.div
-                key={exp.id}
-                initial={{ opacity: 0, y: 40 }}
-                animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: i * 0.15 }}
-                className={`relative flex items-start mb-8 ${
-                  isLeft ? 'md:flex-row' : 'md:flex-row-reverse'
-                }`}
-              >
-                <div className="absolute left-6 md:left-1/2 w-3 h-3 rounded-full bg-[var(--color-primary)] border-2 border-[var(--color-bg-dark)] -translate-x-1/2 mt-6 z-10">
-                  {exp.current && (
-                    <span className="absolute inset-0 rounded-full bg-[var(--color-primary)] animate-ping opacity-40" />
-                  )}
+    <section id="experience" className="px-5 py-16 sm:px-8 sm:py-20">
+      <div className="mx-auto max-w-5xl">
+        <SectionHeading title="Experience" subtitle="Where I work" />
+        <div className="mt-8 space-y-5">
+          {experiences.map((job, index) => (
+            <motion.article
+              key={job.id}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.45, delay: index * 0.06 }}
+              className="rounded-3xl border border-[var(--color-border)] bg-white p-6 sm:p-8"
+            >
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h3 className="text-xl font-semibold tracking-tight">{job.role}</h3>
+                  <p className="mt-1 text-[var(--color-primary-dark)]">{job.company}</p>
+                  {job.location && <p className="mt-1 text-sm text-[var(--color-text-muted)]">{job.location}</p>}
                 </div>
-
-                <div className={`ml-14 md:ml-0 md:w-1/2 ${isLeft ? 'md:pr-12' : 'md:pl-12'}`}>
-                  <button
-                    onClick={() => setExpanded(isExpanded ? null : exp.id)}
-                    className="w-full text-left p-6 rounded-xl glass hover:glow transition-all duration-300 group"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <Briefcase size={16} className="text-[var(--color-primary-light)]" />
-                          <span className="text-sm text-[var(--color-accent)] font-mono">
-                            {exp.startDate} — {exp.current ? 'Present' : exp.endDate}
-                          </span>
-                          {exp.current && (
-                            <span className="px-2 py-0.5 text-xs rounded-full bg-green-500/20 text-green-400">
-                              Current
-                            </span>
-                          )}
-                        </div>
-                        <h3 className="text-xl font-bold group-hover:gradient-text transition-all">
-                          {exp.role}
-                        </h3>
-                        <p className="text-[var(--color-primary-light)] font-medium">{exp.company}</p>
-                        {exp.location && (
-                          <p className="text-sm text-[var(--color-text-muted)]">{exp.location}</p>
-                        )}
-                      </div>
-                      <ChevronDown
-                        size={20}
-                        className={`text-[var(--color-text-muted)] transition-transform duration-300 shrink-0 mt-1 ${
-                          isExpanded ? 'rotate-180' : ''
-                        }`}
-                      />
-                    </div>
-
-                    <motion.div
-                      initial={false}
-                      animate={{ height: isExpanded ? 'auto' : 0, opacity: isExpanded ? 1 : 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="overflow-hidden"
-                    >
-                      <p className="text-[var(--color-text-muted)] mt-4 leading-relaxed">
-                        {exp.description}
-                      </p>
-                      <ul className="mt-4 space-y-2">
-                        {exp.highlights.map((h, j) => (
-                          <li key={j} className="flex items-start gap-2 text-sm text-[var(--color-text-muted)]">
-                            <span className="text-[var(--color-accent)] mt-1">▹</span>
-                            {h}
-                          </li>
-                        ))}
-                      </ul>
-                      <div className="flex flex-wrap gap-2 mt-4">
-                        {exp.techStack.map((tech) => (
-                          <span
-                            key={tech}
-                            className="px-2 py-1 text-xs rounded-md bg-[var(--color-bg-elevated)] text-[var(--color-text-muted)]"
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
-                    </motion.div>
-                  </button>
-                </div>
-              </motion.div>
-            );
-          })}
+                <p className="rounded-full bg-[var(--color-bg-elevated)] px-3 py-1 text-sm text-[var(--color-text-muted)]">
+                  {formatDate(job.startDate)} — {job.current ? 'Present' : formatDate(job.endDate)}
+                </p>
+              </div>
+              <p className="mt-5 leading-7 text-[var(--color-text-muted)]">{job.description}</p>
+              <ul className="mt-5 space-y-3">
+                {job.highlights.map((item) => (
+                  <li key={item} className="flex gap-3 text-sm leading-6 text-[var(--color-text)]">
+                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-accent)]" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-6 flex flex-wrap gap-2">
+                {job.techStack.map((tech) => (
+                  <span key={tech} className="rounded-full bg-[var(--color-bg-elevated)] px-3 py-1 text-xs">
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </motion.article>
+          ))}
         </div>
       </div>
     </section>
   );
+}
+
+function formatDate(value: string | null) {
+  if (!value) return '';
+  const [year, month] = value.split('-');
+  if (!month) return year;
+  const names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return `${names[Number(month) - 1]} ${year}`;
 }
